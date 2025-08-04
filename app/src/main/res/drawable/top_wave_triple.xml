@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="1080dp"
+    android:height="320dp"
+    android:viewportWidth="1080"
+    android:viewportHeight="320">
+
+    <!-- Light Blue Background Wave -->
+    <path
+        android:fillColor="#BBDEFB"
+        android:pathData="M0,0
+            L1080,0
+            L1080,260
+            Q540,300 0,260
+            Z" />
+
+    <!-- Medium Blue Middle Wave -->
+    <path
+        android:fillColor="#64B5F6"
+        android:pathData="M0,0
+            L1080,0
+            L1080,220
+            Q540,280 0,220
+            Z" />
+
+    <!-- Dark Blue Front Wave -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M0,0
+            L1080,0
+            L1080,180
+            Q540,260 0,180
+            Z" />
+</vector>

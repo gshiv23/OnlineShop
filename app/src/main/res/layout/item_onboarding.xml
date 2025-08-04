@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/onboardingImage"
+        android:layout_width="335dp"
+        android:layout_height="484dp"
+        android:layout_marginBottom="24dp"
+        android:scaleType="centerInside" />
+</LinearLayout>

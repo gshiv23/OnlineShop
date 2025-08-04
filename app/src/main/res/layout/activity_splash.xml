@@ -1,0 +1,54 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <!-- Top Decorative Wave -->
+    <ImageView
+        android:id="@+id/topWave"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/top_wave_triple"
+        android:layout_alignParentTop="true" />
+
+    <RelativeLayout
+        android:id="@+id/logoContainer"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/circle_white_bg1"
+        android:elevation="8dp"
+        android:padding="20dp">
+
+        <ImageView
+            android:id="@+id/splashLogo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/onlineshop1"
+            android:scaleType="centerInside" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/splashAppName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Online Shop"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/blue_Dark"
+        android:layout_below="@id/logoContainer"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:id="@+id/splashTagline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Shop Smart • Save More"
+        android:textSize="16sp"
+        android:textColor="@color/grey"
+        android:layout_below="@id/splashAppName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="6dp" />
+</RelativeLayout>

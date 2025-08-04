@@ -1,0 +1,156 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Top Curved Background -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@drawable/signup_top_background" />
+
+    <!-- Signup Form -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Account"
+                android:textColor="@android:color/white"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Full Name -->
+            <EditText
+                android:id="@+id/signupName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Full Name"
+                android:inputType="textPersonName"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_background" />
+
+            <!-- Email -->
+            <EditText
+                android:id="@+id/signupEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email Address"
+                android:inputType="textEmailAddress"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/edittext_background" />
+
+            <!-- Password -->
+            <EditText
+                android:id="@+id/signupPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/edittext_background" />
+
+            <!-- Confirm Password -->
+            <EditText
+                android:id="@+id/signupConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Confirm Password"
+                android:inputType="textPassword"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/edittext_background" />
+
+            <!-- User Type Selection -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select User Type"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:textColor="@android:color/black" />
+
+            <RadioGroup
+                android:id="@+id/userTypeGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <RadioButton
+                    android:id="@+id/radioUser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User"
+                    android:textColor="@android:color/black" />
+
+                <RadioButton
+                    android:id="@+id/radioAdmin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Admin"
+                    android:textColor="@android:color/black"
+                    android:layout_marginStart="24dp" />
+            </RadioGroup>
+
+            <!-- Terms and Conditions -->
+            <CheckBox
+                android:id="@+id/agreeTerms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="I agree to the Terms and Conditions"
+                android:layout_marginTop="20dp"
+                android:textColor="@android:color/black" />
+
+            <!-- Signup Button -->
+            <Button
+                android:id="@+id/signupBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sign Up"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/blue_Dark"
+                android:padding="14dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="24dp"
+                android:background="@android:color/darker_gray" />
+
+            <!-- Go to Login -->
+            <TextView
+                android:id="@+id/goToLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? Login"
+                android:textColor="@color/blue_Dark"
+                android:textSize="14sp"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

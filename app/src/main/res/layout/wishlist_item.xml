@@ -1,0 +1,66 @@
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <!-- Product Image -->
+        <ImageView
+            android:id="@+id/wishlist_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/grey_background"
+            android:src="@drawable/ic_placeholder"/>
+
+        <!-- Product Title -->
+        <TextView
+            android:id="@+id/wishlist_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/wishlist_image"
+            android:layout_marginStart="12dp"
+            android:text="Product Name"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+        <!-- Product Price -->
+        <TextView
+            android:id="@+id/wishlist_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/wishlist_title"
+            android:layout_toEndOf="@id/wishlist_image"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
+            android:text="Rs. 500"
+            android:textColor="@color/blue_Dark"
+            android:textSize="14sp" />
+
+        <!-- Remove Button -->
+        <ImageButton
+            android:id="@+id/remove_wishlist_btn"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentEnd="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_delete"
+            android:contentDescription="Remove"
+            android:backgroundTint="@color/red"/>
+
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>

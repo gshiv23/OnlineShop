@@ -2,23 +2,12 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp"
-    android:background="@android:color/white">
+    android:padding="16dp">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/dialogTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Product"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:paddingBottom="12dp"/>
 
         <EditText
             android:id="@+id/etTitle"
@@ -26,37 +15,17 @@
             android:layout_height="wrap_content"
             android:hint="Product Title" />
 
-        <ImageView
-            android:id="@+id/ivProductImage"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_gravity="center_horizontal"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_placeholder"
-            android:background="@drawable/circle_white_bg"
-            android:padding="8dp"
-            android:contentDescription="Product Image"
-            android:layout_marginBottom="8dp"/>
-
-        <Button
-            android:id="@+id/btnUploadImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Upload Image"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="12dp" />
-
         <EditText
             android:id="@+id/etReview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Review Text" />
+            android:hint="Review" />
 
         <EditText
             android:id="@+id/etScore"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Score (e.g., 4.5)"
+            android:hint="Score"
             android:inputType="numberDecimal" />
 
         <EditText
@@ -70,36 +39,47 @@
             android:id="@+id/etDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description"
-            android:minLines="3"
-            android:gravity="top"
-            android:inputType="textMultiLine" />
+            android:hint="Description" />
 
         <Spinner
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/ivProductImage"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="10dp"
+            android:background="#DDD" />
+
+        <Button
+            android:id="@+id/btnUploadImage"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Upload Image"
             android:layout_marginTop="10dp" />
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="16dp"
-            android:gravity="end">
-
-            <Button
-                android:id="@+id/btnCancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cancel" />
+            android:gravity="end"
+            android:layout_marginTop="10dp">
 
             <Button
                 android:id="@+id/btnSave"
+                android:text="Save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:text="Cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save"
-                android:layout_marginStart="16dp" />
+                android:layout_marginStart="10dp" />
         </LinearLayout>
 
     </LinearLayout>

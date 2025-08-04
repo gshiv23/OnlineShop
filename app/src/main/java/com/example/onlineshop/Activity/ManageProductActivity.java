@@ -1,6 +1,6 @@
 package com.example.onlineshop.Activity;
 
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,109 +11,63 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.onlineshop.Adapter.ManageProductAdapter;
-import com.example.onlineshop.Domain.CategoryDomain;
-import com.example.onlineshop.Domain.ProductDomain;
+import com.example.onlineshop.Adapter.AdminCategoryAdapter;
+import com.example.onlineshop.Model.CategoryModel;
 import com.example.onlineshop.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.*;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
-public class ManageProductActivity extends AppCompatActivity {
+public class ManageCategoryActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerManageProduct;
-    private FloatingActionButton btnAddProduct;
-    private List<ProductDomain> productList = new ArrayList<>();
-    private ManageProductAdapter adapter;
-    private DatabaseReference productRef, categoryRef;
+    private RecyclerView recyclerView;
+    private FloatingActionButton fabAdd;
+    private DatabaseReference categoryRef;
+    private List<CategoryModel> categoryList;
+    private AdminCategoryAdapter adapter;
 
-    private List<CategoryDomain> categoryList = new ArrayList<>();
-    private List<String> categoryNames = new ArrayList<>();
-
-    private ImageView imagePreview;
-    private String encodedImage = "";
-
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
+    private Bitmap selectedBitmap = null;
+    private ImageView currentDialogImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_product);
+        setContentView(R.layout.activity_manage_category);
 
-        recyclerManageProduct = findViewById(R.id.recyclerManageProduct);
-        btnAddProduct = findViewById(R.id.btnAddProduct);
-        recyclerManageProduct.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView = findViewById(R.id.recycler_categories);
+        fabAdd = findViewById(R.id.fab_add_category);
 
-        productRef = FirebaseDatabase.getInstance().getReference("Products");
         categoryRef = FirebaseDatabase.getInstance().getReference("Categories");
+        categoryList = new ArrayList<>();
 
-        adapter = new ManageProductAdapter(
-                this,
-                (ArrayList<ProductDomain>) productList,
-                this::showEditDialog,
-                this::deleteProduct
-        );
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new AdminCategoryAdapter(this, categoryList, categoryRef);
+        recyclerView.setAdapter(adapter);
 
-        recyclerManageProduct.setAdapter(adapter);
-
-        btnAddProduct.setOnClickListener(v -> showProductDialog(null));
-
-        loadProducts();
+        fabAdd.setOnClickListener(v -> showAddCategoryDialog());
         loadCategories();
-
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        Uri imageUri = result.getData().getData();
-                        try {
-                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                            imagePreview.setImageBitmap(bitmap);
-                            encodedImage = bitmapToBase64(bitmap);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-    }
-
-    private void loadProducts() {
-        productRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                productList.clear();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    ProductDomain product = data.getValue(ProductDomain.class);
-                    if (product != null) {
-                        product.setId(data.getKey());
-                        productList.add(product);
-                    }
-                }
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ManageProductActivity.this, "Failed to load products", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void loadCategories() {
@@ -121,139 +75,156 @@ public class ManageProductActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 categoryList.clear();
-                categoryNames.clear();
-                for (DataSnapshot data : snapshot.getChildren()) {
-                    CategoryDomain category = data.getValue(CategoryDomain.class);
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    CategoryModel category = dataSnapshot.getValue(CategoryModel.class);
                     if (category != null) {
-                        category.setId(data.getKey());
                         categoryList.add(category);
-                        categoryNames.add(category.getName());
                     }
                 }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(ManageProductActivity.this, "Failed to load categories", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ManageCategoryActivity.this, "Failed to load categories", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void showEditDialog(ProductDomain product) {
-        showProductDialog(product);
-    }
+    private void showAddCategoryDialog() {
+        selectedBitmap = null;
 
-    private void showProductDialog(ProductDomain productToEdit) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_product, null);
-        builder.setView(view);
-        AlertDialog dialog = builder.create();
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_category, null);
+        EditText etCategoryName = view.findViewById(R.id.et_category_name);
+        currentDialogImageView = view.findViewById(R.id.iv_category_image);
 
-        EditText editTitle = view.findViewById(R.id.etTitle);
-        EditText editReview = view.findViewById(R.id.etReview);
-        EditText editScore = view.findViewById(R.id.etScore);
-        EditText editPrice = view.findViewById(R.id.etPrice);
-        EditText editDescription = view.findViewById(R.id.etDescription);
-        Spinner spinnerCategory = view.findViewById(R.id.spinnerCategory);
-        imagePreview = view.findViewById(R.id.ivProductImage);
-        Button btnUploadImage = view.findViewById(R.id.btnUploadImage);
-        Button btnSave = view.findViewById(R.id.btnSave);
-        Button btnCancel = view.findViewById(R.id.btnCancel);
+        currentDialogImageView.setOnClickListener(v -> openImagePicker());
 
-        ArrayAdapter<String> adapterSpinner = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categoryNames);
-        spinnerCategory.setAdapter(adapterSpinner);
-
-        if (productToEdit != null) {
-            editTitle.setText(productToEdit.getTitle());
-            editReview.setText(productToEdit.getReview());
-            editScore.setText(String.valueOf(productToEdit.getScore()));
-            editPrice.setText(String.valueOf(productToEdit.getPrice()));
-            editDescription.setText(productToEdit.getDescription());
-            encodedImage = productToEdit.getPic();
-
-            if (!TextUtils.isEmpty(encodedImage)) {
-                byte[] imageBytes = Base64.decode(encodedImage, Base64.DEFAULT);
-                Bitmap decodedBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                imagePreview.setImageBitmap(decodedBitmap);
-            }
-
-            for (int i = 0; i < categoryList.size(); i++) {
-                if (categoryList.get(i).getId().equals(productToEdit.getCategory())) {
-                    spinnerCategory.setSelection(i);
-                    break;
-                }
-            }
-        }
-
-        btnUploadImage.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            imagePickerLauncher.launch(intent);
-        });
-
-        btnSave.setOnClickListener(v -> {
-            String title = editTitle.getText().toString().trim();
-            String review = editReview.getText().toString().trim();
-            String scoreStr = editScore.getText().toString().trim();
-            String priceStr = editPrice.getText().toString().trim();
-            String description = editDescription.getText().toString().trim();
-
-            int selectedIndex = spinnerCategory.getSelectedItemPosition();
-            String selectedCategoryId = categoryList.get(selectedIndex).getId();
-
-            if (TextUtils.isEmpty(title) || TextUtils.isEmpty(encodedImage) || TextUtils.isEmpty(priceStr)) {
-                Toast.makeText(this, "Please fill in required fields", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            double score = TextUtils.isEmpty(scoreStr) ? 0.0 : Double.parseDouble(scoreStr);
-            double price = Double.parseDouble(priceStr);
-
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("title", title);
-            map.put("pic", encodedImage);
-            map.put("review", review);
-            map.put("score", score);
-            map.put("price", price);
-            map.put("description", description);
-            map.put("category", selectedCategoryId); // use "category" to match field in model
-
-            if (productToEdit == null) {
-                productRef.push().setValue(map)
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(this, "Product added", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                        });
-            } else {
-                productRef.child(productToEdit.getId()).updateChildren(map)
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(this, "Product updated", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                        });
-            }
-        });
-
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
-
-        dialog.show();
-    }
-
-    private void deleteProduct(ProductDomain product) {
-        new AlertDialog.Builder(this)
-                .setTitle("Delete Product")
-                .setMessage("Are you sure you want to delete this product?")
-                .setPositiveButton("Yes", (dialog, which) -> {
-                    productRef.child(product.getId()).removeValue()
-                            .addOnSuccessListener(unused -> Toast.makeText(this, "Product deleted", Toast.LENGTH_SHORT).show());
+        builder.setView(view)
+                .setTitle("Add Category")
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String categoryName = etCategoryName.getText().toString().trim();
+                    if (!TextUtils.isEmpty(categoryName) && selectedBitmap != null) {
+                        addCategory(categoryName, selectedBitmap);
+                    } else {
+                        Toast.makeText(this, "Enter name & select image", Toast.LENGTH_SHORT).show();
+                    }
                 })
-                .setNegativeButton("No", null)
-                .show();
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create().show();
     }
 
-    private String bitmapToBase64(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        imagePickerLauncher.launch(intent);
+    }
+
+    private final ActivityResultLauncher<Intent> imagePickerLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    Uri imageUri = result.getData().getData();
+                    try {
+                        selectedBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                        if (currentDialogImageView != null) {
+                            currentDialogImageView.setImageBitmap(selectedBitmap);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+    private void addCategory(String name, Bitmap bitmap) {
+        String id = UUID.randomUUID().toString();
+        String imageBase64 = encodeImage(bitmap);
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("name", name);
+        map.put("image", imageBase64);
+
+        categoryRef.child(id).setValue(map).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(this, "Category added successfully", Toast.LENGTH_SHORT).show();
+                selectedBitmap = null;
+            } else {
+                Toast.makeText(this, "Failed to add category", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // ✅ Edit Category
+    public void showEditCategoryDialog(CategoryModel category) {
+        selectedBitmap = decodeImage(category.getImage());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_category, null);
+        EditText etCategoryName = view.findViewById(R.id.et_category_name);
+        currentDialogImageView = view.findViewById(R.id.iv_category_image);
+
+        etCategoryName.setText(category.getName());
+        currentDialogImageView.setImageBitmap(selectedBitmap);
+
+        currentDialogImageView.setOnClickListener(v -> openImagePicker());
+
+        builder.setView(view)
+                .setTitle("Edit Category")
+                .setPositiveButton("Update", (dialog, which) -> {
+                    String updatedName = etCategoryName.getText().toString().trim();
+                    if (!TextUtils.isEmpty(updatedName) && selectedBitmap != null) {
+                        updateCategory(category.getId(), updatedName, selectedBitmap);
+                    } else {
+                        Toast.makeText(this, "Enter name & select image", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create().show();
+    }
+
+    private void updateCategory(String id, String name, Bitmap bitmap) {
+        String imageBase64 = encodeImage(bitmap);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("image", imageBase64);
+
+        categoryRef.child(id).updateChildren(map).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(this, "Category updated", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // ✅ Delete Category
+    public void deleteCategory(CategoryModel category) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Category")
+                .setMessage("Are you sure you want to delete this category?")
+                .setPositiveButton("Delete", (dialog, which) -> {
+                    categoryRef.child(category.getId()).removeValue().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(this, "Category deleted", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, "Delete failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create().show();
+    }
+
+    public static String encodeImage(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+        byte[] imageBytes = baos.toByteArray();
+        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    }
+
+    public static Bitmap decodeImage(String base64) {
+        byte[] decoded = Base64.decode(base64, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decoded, 0, decoded.length);
     }
 }
